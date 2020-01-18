@@ -189,7 +189,7 @@ add_action( 'woocommerce_admin_order_data_after_billing_address', 'jl_document_d
 /**		
 * Envia los campos personalizados por correo
 **/
-function jl_woocommerce_custom_email_order_meta_fields($array, $sent_to_admin, $order) {
+function jl_woocommerce_custom_email_order_meta_fields_documents($array, $sent_to_admin, $order) {
 
     if(get_post_meta( $order->get_id(), 'document_type', true )) {
 
@@ -218,7 +218,7 @@ function jl_woocommerce_custom_email_order_meta_fields($array, $sent_to_admin, $
 
     }
 }
-add_filter('woocommerce_email_order_meta_fields','jl_woocommerce_custom_email_order_meta_fields',10,3);
+add_filter('woocommerce_email_order_meta_fields','jl_woocommerce_custom_email_order_meta_fields_documents',10,3);
 
 
 
