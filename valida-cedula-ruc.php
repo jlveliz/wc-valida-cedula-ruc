@@ -135,4 +135,113 @@ if (!function_exists('jl_process_form_checkout')) {
 add_action('woocommerce_checkout_process', 'jl_process_form_checkout');
 
 
+/**
+ * Guarda Custom field in DB
+ */
 
+if(!function_exists('jl_update_custom_field_order_meta')) {
+    function jl_update_custom_field_order_meta( $order_id ) {
+        
+        if ( ! empty( $_POST['document_type'] ) ) {
+            update_post_meta( $order_id, 'document_type', sanitize_text_field( $_POST['document_type'] ) );
+        }
+
+        if ( ! empty( $_POST['cedula'] ) ) { 
+            update_post_meta( $order_id, 'cedula', sanitize_text_field( $_POST['cedula'] ) );
+        }
+
+        if ( ! empty( $_POST['ruc'] ) ) { 
+            update_post_meta( $order_id, 'ruc', sanitize_text_field( $_POST['ruc'] ) );
+        }
+    }
+}
+
+add_action( 'woocommerce_checkout_update_order_meta', 'jl_update_custom_field_order_meta' );
+
+
+
+
+/**
+ * Muestra la orden en el edit
+ */
+
+
+if(!function_exists('')) {
+
+    function jl_document_display_admin_order_meta($order){
+
+        if(get_post_meta( $order->get_id(), 'document_type', true )) {
+            echo '<p><strong>'.__('Tipo de Identificacion').':</strong> <br/>' . get_post_meta( $order->get_id(), 'document_type', true ) . '</p>';
+            if(get_post_meta( $order->get_id(), 'document_type', true ) == 'ruc') {
+                echo '<p><strong>'.__('Ruc').':</strong> <br/>' . get_post_meta( $order->get_id(), 'ruc', true ) . '</p>';
+            } else {
+                echo '<p><strong>'.__('Cedula').':</strong> <br/>' . get_post_meta( $order->get_id(), 'cedula', true ) . '</p>';
+            }
+        }
+
+    }
+
+}
+
+add_action( 'woocommerce_admin_order_data_after_billing_address', 'jl_document_display_admin_order_meta', 10, 1 );
+
+
+/**		
+* Envia los campos personalizados por correo
+**/
+function jl_woocommerce_custom_email_order_meta_fields($array, $sent_to_admin, $order) {
+
+    if(get_post_meta( $order->get_id(), 'document_type', true )) {
+
+       
+        $array['document_type'] =  [
+            'label' => 'Tipo de Identificacion',
+            'value' => get_post_meta( $order->get_id(), 'document_type', true )
+        ];
+
+        if(get_post_meta( $order->get_id(), 'document_type', true ) == 'ruc') { 
+            $array['ruc'] = [
+                'label' => 'Ruc',
+                'value' => get_post_meta( $order->get_id(), 'ruc', true )
+                
+            ];
+        } else {
+            $array['cedula'] = [
+                'label' => 'Cedula',
+                'value' => get_post_meta( $order->get_id(), 'cedula', true )
+                
+            ];
+        }
+            
+
+        return $array;
+
+    }
+}
+add_filter('woocommerce_email_order_meta_fields','jl_woocommerce_custom_email_order_meta_fields',10,3);
+
+
+
+
+/** 
+ * Muestra los datos en la pagina de orden recibida 
+ */
+
+
+if(!function_exists('jl_thankyou_order_received')) {
+    
+    function jl_thankyou_order_received($order_id) {
+        $order = wc_get_order($order_id);
+        if(get_post_meta( $order_id, 'document_type', true )) {
+            echo '<li>'.__('Tipo de Identificacion').':<strong> ' . get_post_meta( $order_id, 'document_type', true ) . '</strong></li>';
+            if(get_post_meta( $order_id, 'document_type', true ) == 'ruc') {
+                echo '<li>'.__('Ruc').': <strong>' . get_post_meta( $order_id, 'ruc', true ) . '</strong></li>';
+            } else {
+                echo '<li>'.__('Cedula').':<strong> ' . get_post_meta( $order_id, 'cedula', true ) . '<strong></li>';
+            }
+        }
+    }
+
+}
+
+add_action('woocommerce_thankyou','jl_thankyou_order_received');
