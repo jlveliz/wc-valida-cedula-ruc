@@ -1,4 +1,4 @@
-# Añade y Valida Rucs o Cédulas Ecuatorianas para Woocommerce
+# c-valida-cedula-ruc
 
 Añade Automáticamente y Valida sin complicaciones campos de  Rucs o Cédulas Ecuatorianas en el formulario de checkout de Woocommerce 
 
