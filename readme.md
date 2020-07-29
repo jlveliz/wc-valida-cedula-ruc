@@ -1,4 +1,4 @@
-# c-valida-cedula-ruc
+# wc-valida-cedula-ruc
 
 Añade Automáticamente y Valida sin complicaciones campos de  Rucs o Cédulas Ecuatorianas en el formulario de checkout de Woocommerce 
 
@@ -6,4 +6,4 @@ Añade Automáticamente y Valida sin complicaciones campos de  Rucs o Cédulas E
 
 ## Validador usado 
 Ing. Mauricio Lopez
-[Github] (https://github.com/diaspar/validacion-cedula-ruc-ecuador/)
+[Github](https://github.com/diaspar/validacion-cedula-ruc-ecuador/)
