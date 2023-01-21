@@ -39,9 +39,9 @@ if (!function_exists('jl_woocommerce_checkout_add_document_type')) {
         woocommerce_form_field('document_type', [
                 'type' => 'select',
                 'label'     => __('Tipo de Identificación', 'woocommerce'),
-                'placeholder'   => _x('Field Value', 'placeholder', 'woocommerce'),
                 'required'  => true,
                 'class' => ['select-field','form-row-wide'],
+                'input_class' => ['jl-field-identification-type'],
                 'options' => [
                     'cedula' => 'Cédula',
                     'ruc' => 'Ruc',

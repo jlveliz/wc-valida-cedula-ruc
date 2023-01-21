@@ -4,3 +4,9 @@
 #jl-field-pasaporte_field {
   display: none;
 }
+
+
+.jl-field-identification-type {
+  height: 3.5rem !important;
+  padding: .9rem 1.1rem !important
+}
